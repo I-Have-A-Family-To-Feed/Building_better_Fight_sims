@@ -1,10 +1,3 @@
-# NEXT THING TO WORK ON: BOSS IMMUNITIES
-
-#TO DO: CREATE  A BOSS NAME/EID DICT
-
-
-
-
 #FIGHTS THAT WORK FULLY: Shriekwing, hungering, innerva,  xymox, sludgefist,
 #FIGHTS THAT KINDA WORK, BUT HAVE ISSUES: huntsman. ---> no barghast adds (don't show up in the adds table for some reason), dog movement is merged with boss movement and makes it messy
 #FIGHTS THAT DO NOT WORK CURRENTLY: Sun king, Council, SLG, Denathrius. 
