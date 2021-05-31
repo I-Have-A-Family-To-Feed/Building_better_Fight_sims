@@ -5,16 +5,14 @@
 
 
 
-#FIGHTS THAT WORK FULLY: Shriekwing, hungering, innerva, sludgefist, xymox, 
-#FIGHTS THAT WORK, BUT HAVE ISSUES: huntsman. ---> no barghast adds (don't show up in the adds table for some reason), does not account for moving barghast away.
-
+#FIGHTS THAT WORK FULLY: Shriekwing, hungering, innerva,  xymox, sludgefist,
+#FIGHTS THAT KINDA WORK, BUT HAVE ISSUES: huntsman. ---> no barghast adds (don't show up in the adds table for some reason), dog movement is merged with boss movement and makes it messy
 #FIGHTS THAT DO NOT WORK CURRENTLY: Sun king, Council, SLG, Denathrius. 
 
 import raw_queries as Q
 import query_variables
-import header
+import header #YOU NEED TO MAKE THIS FILE YOURSELF
 import requests
-#import http.client
 import tkinter as tk 
 from tkinter import *
 import re
@@ -22,7 +20,7 @@ import math
 
 url = "https://www.warcraftlogs.com/api/v2"
 V=query_variables.variables
-token = header.headers
+token = header.headers 
 
 
 # hard coding this stuff for now
@@ -420,80 +418,5 @@ mainloop()
 
 
 
-#############################################################################################################
-
-
-'''
-THINKING OUT LOUD:
-
-SLG:
-    a seemingly straight forward way to simulate the bosses is to treat is as 1 boss with immune phases + an add that spawns for p3 that's treated as the 2nd boss.
-    the  obvious problem with this is that it will not accurately simulate condemns >80% usability.
-    it's possible to set particular unit's initial HP% (this is what raidbots does for execute patchwork sims)
-        enemy="NAME"
-        enemy_initial_health_percentage="20"
-    it's not immediately clear how to use this in conjuction with creating the "boss" add for p3. but I see no obvious reasons why there wouldn't be a way to do it.
-    assuming that works out, we then gotta deal with the fact that after each intermission, you get a new boss, and therefore it effectively "heals" back to full HP.
-    There might be a way to implement a raid_event to heal the boss during the immunity phases, but I am currently unsure.
-
-    
-MERGING MULTIPLE ADD SPAWNS:
- right now every add spawn gets it's own raidEvent.
- this is fine for fights with a few adds (huntsman/innerva), but will make fights with lots of adds very messy (easy/obvious example is echos of sin on denathrius p1)
- the first potential solution to this that comes to mind is to collect all the add spawns as we currently do, but to compare the spawn times of the adds in the list, and then group all adds that spawn within a certain time window
- the obvious way of determining the duration of a group of adds is to calculate the average (mean or median) lifespan of the adds in that grouping. if we want to be fancy, simcraft has functionality for creating a distribution of durations given a mean and standard deviation
- One solvable complicating factor in doing this is when multiple adds spawn that have significantly different HPs, such that they die at very different times. the most obvious example of this is innerva, so some extra consideration should be made
-
-
-SIMULATING "RANDOM RUN-OUT" MECHANICS:
-any mechanic where you have to run away from the boss, that doesn't happen to everyone simultaneously. you know the type. run the debuff out, drop the puddle over here, bla bla bla.
-YES WE COULD IMPLEMENT THE RANDOM RUN OUT MECHANICS AND STUFF. NO I DON'T WANT TO.
-while that technically makes the simulation 'more accurate' doing so just adds more variance/randomness that conflicts with what the entire point of this project is meant to accomplish 
- that is:
-   1)  trying to generate an accurate approximation of what your gear is capable of on a given fight. This is meant to be the upperbound, as it simulates perfect play. It makes no sense to me to inject variances that will make generating that upper bound less accurate
-   2)  optimizing gear decisions on a per fight basis. my gut feeling is that random runout mechanics are extremly unlikely to have any meaningful impact on gearing decisions. 
-that said, if we ever get bored enough to implement random run out mechanics, then I would expect there to be a toggle to turn them on and off.    
-
-
-
-PIPE-DREAMING:
-    1)MERGING OF LOGS/SCRIPTS
-    TO GENERATE SIMPLE PRESETS @ VARIOUS KILL TIMES 
-        once this tool is fully operational for individual logs, I'd be interested trying to generate presets for individual fights by sampling a large set of logs and "averaging" them together such that it
-        reduces the 'noise' present in the data of individual logs. the primary benefit to this is that it would allow users to adjust the fight lengths while maintaining the accuracy of the simulation.
-        That said, creating a system to do this seems like a monumental undertaking, and seems like it could potentially be beyond what my tiny brain is capable of. 
-
-
-        
-    2)CANVAS+TIMELINE --> SIMCRAFT TOOL
-        a major limitation of the strength this project is that it requires you to have done the thing. That is, there must be logs of the strategy in action, and to get an accurate simulation it must have been a kill.
-        Not all strategies are exact copies of what other guilds are doing, and if you can't find a log of someone using a sufficiently similar strategy, then you're not going to have an accurate simulation.
-        more simply: The WCL->Simc project is able to optimize, but is incapable of producing innovations.
-        
-
-        My idea for overcomming this limitation would be creating an entirely different tool.
-        the premise would be to create a canvas tool like raidplan.io, which is a tool that provides overhead images of boss rooms, and allows users to overlay images of the boss, of adds, and of player marker.
-        raidplain.io is primarily used for creating visual aids that help brainstorm/explain boss strategies. This is especially valuable for guilds when they are progressing on a boss.
-
-        This tool would have all of that functionality, but it would also have a timeline. This would allow users to set the boss position at certain times,
-        so they can say at time t1 we move the boss from A to B. and then at time t2 we move the boss from B to C. at time t3 we get adds that spawn,etc.
-        once this timeline has been created by the user, the tool would be able to generate the simcraft overrides to simulate that strategy in Simcraft.
-
-        extrapolating from this initial functionality, there is much that could be done to maximize the benefit of the tool:
-
-            you could allow for placing of movement CDs (windrush/roar  ) (something not currently available in raidplan.io)
-            if melee/ranged don't just follow the boss movements you could force them to move in particular ways at particular times
-            you could specify your composition, and simulate the raid using that composition via the simcraft preset gearsets.
-                    doing this for multiple strategy options would enable you to pick the most optimal one for your raids DPS.
-            It would give world-first guilds the ability to simulate their strategies for upcoming bosses.
-            
-        
-        The biggest problem for me personally is that I have precisely zero experience making anything remotely like a cavnas tool, and I have no real sense of how/where to begin creating a tool like this. 
-
-        
-
-
-    
     
 
-'''
